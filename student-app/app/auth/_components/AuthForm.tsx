@@ -3,7 +3,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SignInForm from "./SignInForm";
 import RegisterForm from "./RegisterForm";
-import OAuthForm from "./OAuthForm";
 
 export function AuthForm() {
 	return (
@@ -20,7 +19,6 @@ export function AuthForm() {
 					<RegisterForm />
 				</TabsContent>
 			</Tabs>
-			<OAuthForm />
 		</div>
 	);
 }
