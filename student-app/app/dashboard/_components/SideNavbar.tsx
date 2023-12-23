@@ -51,10 +51,6 @@ const UserProfileCard: React.FC = () => {
           Additional user information
         </CardDescription>
       </CardContent>
-      {/* (Optional) CardFooter */}
-      {/* <CardFooter>
-        <p>Card Footer</p>
-      </CardFooter> */}
     </Card>
   );
 };

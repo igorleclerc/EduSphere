@@ -17,15 +17,14 @@ import { Button } from "@/components/ui/button";
 import { signInUser } from "@/services/auth.service";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
+import Link from "next/link";
 
 
 const LoginFormSchema = z.object({
   email: z
     .string({ required_error: "Addresse mail requise" })
     .email("Adresse mail incorrecte"),
-  password: z.string({ required_error: "Mot de passe requis" }).min(6, {
-    message: "Le mot de passe doit faire minimun 6 caractères.",
-  }),
+  password: z.string({ required_error: "Mot de passe requis" }).min(6),
 });
 
 type LoginFormValues = z.infer<typeof LoginFormSchema>;
@@ -93,6 +92,7 @@ export default function SignInForm() {
                 />
               </FormControl>
               <FormMessage />
+              <Link href="" className="text-blue-900 text-xs hover:text-blue-700 hover:underline">Mot de passe oublié ?</Link>
             </FormItem>
           )}
         />

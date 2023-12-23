@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import SideNavbar from "./_components/SideNavbar";
-
+import SideBar from "./_components/SideBar";
 
 export const metadata: Metadata = {
-  title: "EduSphere  | Dashboard",
+  title: "EduSphere | Dashboard",
   description:
-    "EduSphere est une plateforme d addmission en ligne pour les etudiants du secondaire et du superieur",
+    "EduSphere est une plateforme d'admission en ligne pour les étudiants du secondaire et du supérieur",
 };
 
 export default function DashboardLayout({
@@ -14,12 +13,13 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section>
-      <SideNavbar />
-      <div>
-        Blog Content
+    <div className="flex">
+      <SideBar />
+      <main className="flex-1 w-full">
+        <div className="p-4">
         {children}
-      </div>
-    </section>
+        </div>
+      </main>
+    </div>
   );
 }

@@ -17,37 +17,126 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { useRouter } from "next-nprogress-bar";
+import { signUpUser } from "@/services/auth.service";
+import { Loader2 } from "lucide-react";
 
-const FormSchema = z
-  .object({
-    email: z.string().email(),
-    password: z.string().min(6, {
-      message: "Mot de passe requis",
-    }),
-    confirm: z.string().min(6, {
-      message: "Confirmation du mot de passe requis",
-    }),
-  })
-  .refine((data) => data.confirm === data.password, {
-    message: "Les mots de passe ne correspondent pas",
-    path: ["confirm"],
-  });
+const SignUpFormSchema = z.object({
+  email: z
+    .string({ required_error: "Addresse mail requise" })
+    .email("Adresse mail incorrecte"),
+  password: z
+    .string({ required_error: "Mot de passe requis" })
+    .min(6, { message: "Le mot de passe doit faire minimun 6 caractères." }),
+  confirm: z
+    .string({ required_error: "Confimration du mot de passe requis" })
+    .min(6),
+  first_name: z
+    .string({ required_error: "Prénom requis" }),
+  last_name: z
+    .string({ required_error: "Nom requis" }),
+  INE: z
+    .string({ required_error: "INE requis" })
+    .min(10, { message: "L'INE doit faire 10 caractères." }),
+}).refine(
+  (values) => {
+    return values.password === values.confirm;
+  },
+  {
+    message: "Les mots de passe ne correspondent pas.",
+    path: ["confirmPassword"],
+  }
+);
+
+type SignUpFormValues = z.infer<typeof SignUpFormSchema>;
 
 export default function RegisterForm() {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      confirm: "",
-    },
+  const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
+
+  const form = useForm<SignUpFormValues>({
+    resolver: zodResolver(SignUpFormSchema),
   });
 
-  const handleSubmit = (values: z.infer<typeof FormSchema>) => {}
+  const handleSubmit = async (values: SignUpFormValues) => {
+    try {
+      setIsLoading(true);
+      await signUpUser(values);
+      router.push("/dashboard");
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: error.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="w-full space-y-6">
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="w-full space-y-6"
+      >
+        <div className="flex justify-center gap-2">
+        <FormField
+          control={form.control}
+          name="first_name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Prénom</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Robert"
+                  {...field}
+                  type="firstname"
+                  onChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="last_name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nom</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Delarue"
+                  {...field}
+                  type="lastname"
+                  onChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        </div>
+        <FormField
+          control={form.control}
+          name="INE"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>INE</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Robert"
+                  {...field}
+                  type="INE"
+                  onChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="email"
@@ -104,9 +193,12 @@ export default function RegisterForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full flex gap-2">
+        <Button disabled={isLoading} type="submit" className="w-full flex gap-2">
+        {isLoading ? <Loader2 size="16" className="animate-spin" /> : null}
           Register
-          <AiOutlineLoading3Quarters className={cn("animate-spin")} />
+        </Button>
+        <Button variant="secondary" className="w-full flex gap-2">
+          Créer un compte avec EduConnect
         </Button>
       </form>
     </Form>
